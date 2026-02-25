@@ -41,7 +41,7 @@ export default function Home() {
         {/* Intro Section */}
         <section className="py-24 max-w-7xl mx-auto px-8 flex flex-col items-center text-center">
           <div className="flex items-center gap-2 mb-6 text-brand-green font-bold text-sm tracking-wider uppercase">
-            <div className="w-8 h-[2px] bg-brand-green"></div>
+            <div className="w-8 h-0.5 bg-brand-green"></div>
             <span>About Us</span>
             <div className="w-2 h-2 rounded-full bg-brand-green"></div>
           </div>
@@ -58,7 +58,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-8">
             <div className="flex flex-col items-center text-center mb-16">
               <div className="flex items-center gap-2 mb-4 text-brand-green font-bold text-sm tracking-wider uppercase">
-                <div className="w-8 h-[2px] bg-brand-green"></div>
+                <div className="w-8 h-0.5 bg-brand-green"></div>
                 <span>Our Services</span>
                 <div className="w-2 h-2 rounded-full bg-brand-green"></div>
               </div>

@@ -117,6 +117,29 @@ Every time ecoPoints are awarded:
 }
 ```
 
+### G. BinPrediction (Aggregated & Predicted)
+
+```json
+{
+  "_id": "ObjectId",
+  "location": {
+    "type": "Point",
+    "coordinates": [lng, lat]
+  },
+  "stats": {
+    "reportsLast48Hours": 0,
+    "avgSeverity": 0.0,
+    "daysSinceLastCleanup": 0.0
+  },
+  "overflowScore": 0.0,
+  "riskLevel": "low | medium | high | critical",
+  "lastPredictedAt": "ISODate",
+  "lastCleanedAt": "ISODate"
+}
+```
+
+> 📍 **Constraint**: Area aggregation happens within a 30m radius of the central point.
+
 ---
 
 ## 📏 Behavioral Rules
@@ -148,7 +171,22 @@ Every time ecoPoints are awarded:
 4.  **EcoPoints Caps**: Users earn 15 points per valid report. Max **3 reports per 24-hour period** are eligible for points to prevent spam.
 5.  **Audit**: Every point award and report creation must be logged in `audit_logs`.
 
-### "Do Not" Rules
+### Prediction Engine Rules (DETERMINISTIC)
+
+1.  **Aggregation Window**: Only reports from the last **48 hours** are considered for frequency analysis.
+2.  **Spatial Grouping**: Reports are clustered into "bins" using a **30m radius**.
+3.  **Scoring Formula (Initial Weights)**:
+    - Weight A (Frequency): `reportsLast48Hours * 10` (Max 50)
+    - Weight B (Severity): `avgSeverity * 0.3` (Max 30)
+    - Weight C (Time): `daysSinceLastCleanup * 2` (Max 20)
+    - `overflowScore = A + B + C` (Total Max 100)
+4.  **Risk Tiers**:
+    - `Critical`: score >= 80
+    - `High`: 60 <= score < 80
+    - `Medium`: 30 <= score < 60
+    - `Low`: score < 30
+5.  **Audit**: Every prediction run must be logged in `audit_logs` with a summary of bins processed.
+6.  **Permissions**: Run endpoint restricted to roles: `admin`, `super_admin`.
 
 - ❌ Never trust client-side role claims
 - ❌ Never allow role elevation without audit log
@@ -181,9 +219,71 @@ CLOUDINARY_URL (TBD)
 
 ---
 
+## � SLA & Alert Configuration (Phase 8)
+
+### CRITICAL Bin SLA Thresholds
+
+```json
+{
+  "critical_cleanup_sla_hours": 12,
+  "critical_escalation_hours": 24,
+  "high_cleanup_sla_hours": 24,
+  "high_escalation_hours": 48,
+  "route_completion_sla_minutes": 360,
+  "route_escalation_minutes": 720,
+  "officer_efficiency_warning_threshold": 2.0
+}
+```
+
+### Alert Types & Actions
+
+| Alert Type | Trigger | Action | Owner |
+|-----------|---------|--------|-------|
+| **CRITICAL_NOT_CLEANED_12H** | CRITICAL bin not cleaned within 12h | Notify officer, flag in admin dashboard | Officer |
+| **CRITICAL_ESCALATION_24H** | CRITICAL bin not cleaned within 24h | Escalate to admin, trigger mandatory cleanup route | Admin |
+| **HIGH_NOT_CLEANED_24H** | HIGH bin not cleaned within 24h | Notify officer | Officer |
+| **HIGH_ESCALATION_48H** | HIGH bin not cleaned within 48h | Escalate to admin | Admin |
+| **ROUTE_INCOMPLETE_6H** | Active route incomplete after 6 hours | Notify officer, ask for status update | Officer |
+| **ROUTE_INCOMPLETE_12H** | Active route incomplete after 12 hours | Escalate to manager | Admin |
+| **OFFICER_EFFICIENCY_DROP** | Officer efficiency drops below 2 bins/hr | Flag in analytics, assign mentoring | Admin |
+
+### Alert Severity Levels
+
+- **CRITICAL**: SLA breach, escalation triggered → async email + dashboard
+- **HIGH**: Warning threshold reached → dashboard notification only
+- **INFO**: Status updates → log only
+
+### Alert Persistence Schema
+
+```json
+{
+  "_id": "ObjectId",
+  "alertType": "CRITICAL_NOT_CLEANED_12H | ...",
+  "severity": "critical | high | info",
+  "binPredictionId": "ObjectId",
+  "routePlanId": "ObjectId (nullable)",
+  "officerId": "clerkUserId (nullable)",
+  "triggeredAt": "ISODate",
+  "resolvedAt": "ISODate (nullable)",
+  "triggerData": {
+    "hoursExceeded": 14.5,
+    "riskLevel": "critical",
+    "lastPredictedScore": 85.0
+  },
+  "escalationChain": [
+    { "notifiedRole": "municipal_officer", "notifiedAt": "ISODate", "acknowledged": true }
+  ],
+  "status": "active | resolved | acknowledged",
+  "createdAt": "ISODate"
+}
+```
+
+---
+
 ## 🔧 Maintenance Log
 
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-02-25 | Project Constitution initialized (Protocol 0) | System Pilot |
 | 2026-02-25 | Schemas, behavioral rules, and arch invariants confirmed from Discovery answers | System Pilot |
+| 2026-02-25 | Phase 8 SLA & Alert configuration added | System Pilot |

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Search, Menu, Phone, Mail } from 'lucide-react'
+import { UserButton } from '@clerk/nextjs'
 
 export default function Header() {
     return (
@@ -31,15 +32,18 @@ export default function Header() {
                             <div className="w-10 h-10 bg-brand-green flex items-center justify-center rounded-sm">
                                 <div className="w-6 h-6 border-2 border-brand-lime rotate-45"></div>
                             </div>
-                            <span className="text-2xl font-serif font-bold text-brand-dark tracking-tight">Casella</span>
+                            <span className="text-2xl font-serif font-bold text-brand-dark tracking-tight">Waste Wise</span>
                         </Link>
 
                         <ul className="hidden lg:flex items-center gap-6 font-medium text-brand-dark">
                             <li><Link href="/" className="hover:text-brand-green transition-colors">Home</Link></li>
-                            <li><Link href="/pages" className="hover:text-brand-green transition-colors">Pages</Link></li>
+                            <li><Link href="/dashboard" className="hover:text-brand-green transition-colors text-brand-green font-bold">Dashboard</Link></li>
+                            <li><Link href="/heatmap" className="hover:text-brand-green transition-colors text-brand-green font-bold">Predictions</Link></li>
+                            <li><Link href="/officer/routes" className="hover:text-brand-green transition-colors text-brand-green font-bold">Routes</Link></li>
+                            <li><Link href="/admin/analytics" className="hover:text-brand-green transition-colors text-brand-green font-bold">Analytics</Link></li>
+                            <li><Link href="/admin/alerts" className="hover:text-brand-green transition-colors text-brand-green font-bold">Alerts</Link></li>
+                            <li><Link href="/upload" className="hover:text-brand-green transition-colors">Upload Report</Link></li>
                             <li><Link href="/services" className="hover:text-brand-green transition-colors">Services</Link></li>
-                            <li><Link href="/case-studies" className="hover:text-brand-green transition-colors">Case Studies</Link></li>
-                            <li><Link href="/blog" className="hover:text-brand-green transition-colors">Blog</Link></li>
                         </ul>
                     </div>
 
@@ -50,12 +54,13 @@ export default function Header() {
                         <button className="lg:hidden p-2 hover:bg-zinc-100 rounded-full transition-colors">
                             <Menu size={20} className="text-brand-dark" />
                         </button>
-                        <button className="hidden sm:block bg-brand-green text-white p-3 rounded-sm hover:bg-opacity-90 transition-all font-bold">
-                            <Menu size={20} />
-                        </button>
+                        <div className="hidden sm:block">
+                            <UserButton afterSignOutUrl="/" />
+                        </div>
                     </div>
                 </div>
             </nav>
         </header>
     )
 }
+

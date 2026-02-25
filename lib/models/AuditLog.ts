@@ -12,6 +12,17 @@ export type AuditAction =
     | 'user_created'      // auto-provisioned via webhook or requireAuth
     | 'user_updated'      // synced via webhook
     | 'emergency_action'
+    | 'prediction_run'    // deterministic prediction engine execution
+    | 'sla_violation_12h'
+    | 'sla_escalation_24h'
+    | 'sla_violation_24h_high'
+    | 'sla_escalation_48h_high'
+    | 'route_sla_violation_6h'
+    | 'route_sla_escalation_12h'
+    | 'officer_efficiency_drop'
+    | 'sla_monitoring_complete'
+    | 'sla_monitoring_error'
+    | 'alert_resolved'
 
 export interface IAuditLog extends Document {
     action: AuditAction
@@ -42,6 +53,17 @@ const AuditLogSchema = new Schema<IAuditLog>(
                 'user_created',
                 'user_updated',
                 'emergency_action',
+                'prediction_run',
+                'sla_violation_12h',
+                'sla_escalation_24h',
+                'sla_violation_24h_high',
+                'sla_escalation_48h_high',
+                'route_sla_violation_6h',
+                'route_sla_escalation_12h',
+                'officer_efficiency_drop',
+                'sla_monitoring_complete',
+                'sla_monitoring_error',
+                'alert_resolved',
             ],
             required: true,
         },

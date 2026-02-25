@@ -17,10 +17,12 @@
 - [ ] Verify all API connections & `.env` credentials
 - [ ] Build handshake scripts in `tools/`
 
-## Phase 3: Architect (3-Layer Build)
-- [ ] Layer 1: Write Architecture SOPs in `architecture/`
-- [ ] Layer 2: Navigation / decision routing
-- [ ] Layer 3: Build deterministic tools in `tools/`
+## Phase 3: Architect (Prediction Engine) ✅
+- [x] Define `bin_predictions` schema in `gemini.md`
+- [x] Write `prediction_sop.md` in `architecture/`
+- [x] Implement `lib/prediction.ts` logic
+- [x] Create API endpoint `/api/predictions/run`
+- [x] Log prediction runs in `audit_logs`
 
 ## Phase 4: Stylize (Refinement & UI)
 - [ ] Payload formatting
